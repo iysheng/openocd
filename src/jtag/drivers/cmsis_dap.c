@@ -846,6 +846,7 @@ skip:
 	block->transfer_count = 0;
 }
 
+/* 底层 read 读取过程 */
 static void cmsis_dap_swd_read_process(struct cmsis_dap *dap, int timeout_ms)
 {
 	struct pending_request_block *block = &dap->pending_fifo[dap->pending_fifo_get_idx];
@@ -888,7 +889,8 @@ static void cmsis_dap_swd_read_process(struct cmsis_dap *dap, int timeout_ms)
 	}
 	uint8_t ack = resp[idx++] & 0x07;
 	if (ack != SWD_ACK_OK) {
-		LOG_DEBUG("SWD ack not OK @ %d %s", transfer_count,
+		/* 难道这里出错了？？？ */
+		LOG_DEBUG("red SWD ack not OK @ %d %s", transfer_count,
 			  ack == SWD_ACK_WAIT ? "WAIT" : ack == SWD_ACK_FAULT ? "FAULT" : "JUNK");
 		queued_retval = ack == SWD_ACK_WAIT ? ERROR_WAIT : ERROR_FAIL;
 		/* TODO: use results of transfers completed before the error occurred? */

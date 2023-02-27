@@ -159,6 +159,7 @@ extern int debug_level;
  * make no assumptions about what went wrong and try to handle the problem.
  */
 #define ERROR_FAIL						(-4)
+/* 等待出错，什么意思 ??? */
 #define ERROR_WAIT						(-5)
 /* ERROR_TIMEOUT is already taken by winerror.h. */
 #define ERROR_TIMEOUT_REACHED			(-6)

@@ -157,11 +157,13 @@ static int cortex_m_load_core_reg_u32(struct target *target,
 	 * we have to save/restore the DCB_DCRDR when used */
 	if (target->dbg_msg_enabled) {
 		retval = mem_ap_read_u32(armv7m->debug_ap, DCB_DCRDR, &dcrdr);
+		LOG_INFO("red wow come here 333 retval=%d", retval);
 		if (retval != ERROR_OK)
 			return retval;
 	}
 
 	retval = mem_ap_write_u32(armv7m->debug_ap, DCB_DCRSR, regsel);
+		LOG_INFO("red wow come here 444 retval=%d", retval);
 	if (retval != ERROR_OK)
 		return retval;
 
@@ -170,10 +172,14 @@ static int cortex_m_load_core_reg_u32(struct target *target,
 	while (1) {
 		retval = mem_ap_read_u32(armv7m->debug_ap, DCB_DHCSR,
 								 &cortex_m->dcb_dhcsr);
+		LOG_INFO("red wow come here 555 retval=%d", retval);
 		if (retval != ERROR_OK)
 			return retval;
+		/* 执行这个操作的时候出错了 */
 		retval = mem_ap_read_atomic_u32(armv7m->debug_ap, DCB_DCRDR,
+		//retval = mem_ap_read_u32(armv7m->debug_ap, DCB_DCRDR,
 										&tmp_value);
+		LOG_INFO("red wow come here 666 retval=%d", retval);
 		if (retval != ERROR_OK)
 			return retval;
 		cortex_m_cumulate_dhcsr_sticky(cortex_m, cortex_m->dcb_dhcsr);
@@ -3089,6 +3095,9 @@ struct target_type cortexm_target = {
 	.checksum_memory = armv7m_checksum_memory,
 	.blank_check_memory = armv7m_blank_check_memory,
 
+	/* 执行算法的入口函数
+	 * 为什么没有 armv7m_run_algorithm
+	 * */
 	.run_algorithm = armv7m_run_algorithm,
 	.start_algorithm = armv7m_start_algorithm,
 	.wait_algorithm = armv7m_wait_algorithm,

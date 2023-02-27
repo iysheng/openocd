@@ -635,6 +635,7 @@ static void swd_quit(struct adiv5_dap *dap)
 	swd->run();
 }
 
+/* 使用的是 swd dap 接口定义 */
 const struct dap_ops swd_dap_ops = {
 	.connect = swd_connect,
 	.send_sequence = swd_send_sequence,

@@ -727,6 +727,7 @@ static bool flash_write_check_gap(struct flash_bank *bank,
 }
 
 
+/* 写入数据后的检查 */
 int flash_write_unlock_verify(struct target *target, struct image *image,
 	uint32_t *written, bool erase, bool unlock, bool write, bool verify)
 {
@@ -785,6 +786,7 @@ int flash_write_unlock_verify(struct target *target, struct image *image,
 		if (retval != ERROR_OK)
 			goto done;
 		if (!c) {
+			/* 不应该走到这里啊 */
 			LOG_WARNING("no flash bank found for address " TARGET_ADDR_FMT, run_address);
 			section++;	/* and skip it */
 			section_offset = 0;

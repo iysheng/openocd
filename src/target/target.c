@@ -2115,6 +2115,7 @@ int target_alloc_working_area_try(struct target *target, uint32_t size, struct w
 	/* user pointer */
 	c->user = area;
 
+	/* 打印当前工作区的分布情况 */
 	print_wa_layout(target);
 
 	return ERROR_OK;

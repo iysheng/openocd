@@ -2185,6 +2185,7 @@ static int jlink_swd_run_queue(void)
 		bool check_ack = swd_cmd_returns_ack(pending_scan_results_buffer[i].swd_cmd);
 		int ack = buf_get_u32(tdo_buffer, pending_scan_results_buffer[i].first, 3);
 		if (check_ack && ack != SWD_ACK_OK) {
+			/* 应答出错，没有 OK */
 			LOG_DEBUG("SWD ack not OK: %d %s", ack,
 				  ack == SWD_ACK_WAIT ? "WAIT" : ack == SWD_ACK_FAULT ? "FAULT" : "JUNK");
 			queued_retval = swd_ack_to_error_code(ack);
@@ -2269,6 +2270,10 @@ static struct jtag_interface jlink_interface = {
 	.execute_queue = &jlink_execute_queue,
 };
 
+/*
+ * jlink 适配器的处理函数集合 !!!
+ * 但是使用的是 swd dap 接口定义
+ * */
 struct adapter_driver jlink_adapter_driver = {
 	.name = "jlink",
 	.transports = jlink_transports,
@@ -2284,5 +2289,6 @@ struct adapter_driver jlink_adapter_driver = {
 	.poll_trace = &poll_trace,
 
 	.jtag_ops = &jlink_interface,
+	/* jlink 的 swd 接口 */
 	.swd_ops = &jlink_swd,
 };

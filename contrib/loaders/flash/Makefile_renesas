@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+BIN2C = ../../../src/helper/bin2char.sh
+
+CROSS_COMPILE ?= arm-none-eabi-
+
+CC=$(CROSS_COMPILE)gcc
+OBJCOPY=$(CROSS_COMPILE)objcopy
+OBJDUMP=$(CROSS_COMPILE)objdump
+
+
+AFLAGS = -static -nostartfiles -mlittle-endian -Wa,-EL
+CFLAGS = -c -mthumb -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -nostdlib -nostartfiles -Os -g -fPIC 
+all: rv40f.inc
+SRC:=rv40f.S
+
+.PHONY: clean
+
+%.elf: %.S
+	$(CC) $(CFLAGS) $(AFLAGS) $< -o $@
+
+#stm32l4x.elf: stm32l4x.c
+#	$(CC) $(CFLAGS) -mcpu=cortex-m0plus -fstack-usage -Wa,-adhln=$(<:.c=.lst) $< -o $@
+
+%.lst: %.elf
+	$(OBJDUMP) -S $< > $@
+
+%.bin: %.elf
+	$(OBJCOPY) -Obinary $< $@
+
+%.inc: %.bin
+	$(BIN2C) < $< > $@
+
+clean:
+	-rm -f *.elf *.lst *.bin *.inc

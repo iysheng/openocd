@@ -235,12 +235,15 @@ int mem_ap_read_u32(struct adiv5_ap *ap, target_addr_t address,
 	/* Use banked addressing (REG_BDx) to avoid some link traffic
 	 * (updating TAR) when reading several consecutive addresses.
 	 */
+	/* 先建立传输 */
 	retval = mem_ap_setup_transfer(ap,
 			CSW_32BIT | (ap->csw_value & CSW_ADDRINC_MASK),
 			address & 0xFFFFFFFFFFFFFFF0ull);
+	//LOG_INFO("red set up come here 777 retval=%d", retval);
 	if (retval != ERROR_OK)
 		return retval;
 
+	/* 这里执行传输 */
 	return dap_queue_ap_read(ap, MEM_AP_REG_BD0(ap->dap) | (address & 0xC), value);
 }
 
@@ -290,6 +293,8 @@ int mem_ap_write_u32(struct adiv5_ap *ap, target_addr_t address,
 	retval = mem_ap_setup_transfer(ap,
 			CSW_32BIT | (ap->csw_value & CSW_ADDRINC_MASK),
 			address & 0xFFFFFFFFFFFFFFF0ull);
+
+	LOG_INFO("red set up mem ap write here 777 retval=%d", retval);
 	if (retval != ERROR_OK)
 		return retval;
 

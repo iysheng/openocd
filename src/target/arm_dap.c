@@ -22,6 +22,7 @@ static LIST_HEAD(all_dap);
 
 extern const struct dap_ops swd_dap_ops;
 extern const struct dap_ops jtag_dp_ops;
+/* 全局的 adapter_driver 变量 */
 extern struct adapter_driver *adapter_driver;
 
 /* DAP command support */
@@ -94,6 +95,7 @@ static int dap_init_all(void)
 	struct arm_dap_object *obj;
 	int retval;
 
+	/* 初始化所有的 DAPs Debug Accsess Points */
 	LOG_DEBUG("Initializing all DAPs ...");
 
 	list_for_each_entry(obj, &all_dap, lh) {
@@ -108,6 +110,7 @@ static int dap_init_all(void)
 			continue;
 
 		if (transport_is_swd()) {
+			/* 默认修改使用的是 swd 模式 */
 			dap->ops = &swd_dap_ops;
 			obj->swd = adapter_driver->swd_ops;
 		} else if (transport_is_dapdirect_swd()) {
@@ -125,6 +128,7 @@ static int dap_init_all(void)
 				is_adiv6(dap) ? "ADIv6" : "ADIv5");
 		}
 
+		/* 执行 adapter 的 connect 函数 */
 		retval = dap->ops->connect(dap);
 		if (retval != ERROR_OK)
 			return retval;
@@ -326,6 +330,7 @@ static int dap_check_config(struct adiv5_dap *dap)
 	return ERROR_OK;
 }
 
+/* 创建 dap 这个是动态创建的 */
 static int dap_create(struct jim_getopt_info *goi)
 {
 	struct command_context *cmd_ctx;

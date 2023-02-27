@@ -551,6 +551,7 @@ static inline int dap_queue_ap_read(struct adiv5_ap *ap,
 		ap->refcount = 1;
 		LOG_ERROR("BUG: refcount AP#0x%" PRIx64 " used without get", ap->ap_num);
 	}
+	/* 实际读取 */
 	return ap->dap->ops->queue_ap_read(ap, reg, data);
 }
 
