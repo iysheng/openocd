@@ -222,6 +222,9 @@ static int armv7m_get_core_reg(struct reg *reg)
 	struct arm *arm = target_to_arm(target);
 
 	/* dump arm info with common_magic */
+	/* 读上来的竟然是 0xA450A45 是 ARM_COMMON_MAGIC
+	 * ARMV7M_COMMON_MAGIC 对应的是 0x2A452A45U
+	 * */
 	LOG_INFO("red arm common_magic=%x", arm->common_magic);
 
 	if (target->state != TARGET_HALTED)

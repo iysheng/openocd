@@ -89,6 +89,7 @@ static const struct cortex_m_part_info cortex_m_parts[] = {
 	{
 		.partno = CORTEX_M33_PARTNO,
 		.name = "Cortex-M33",
+		/* 在这里就匹配到 v8 了 */
 		.arch = ARM_ARCH_V8M,
 		.flags = CORTEX_M_F_HAS_FPV5,
 	},
@@ -144,6 +145,7 @@ static int cortex_m_read_dhcsr_atomic_sticky(struct target *target)
 	return ERROR_OK;
 }
 
+/* 这个函数好像执行就会出错， 为什么？ iysheng */
 static int cortex_m_load_core_reg_u32(struct target *target,
 		uint32_t regsel, uint32_t *value)
 {

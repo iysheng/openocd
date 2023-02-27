@@ -426,8 +426,9 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
         buf_set_u32(reg_params[2].value, 0, 32, source->address + thisrun_count * 2);
         buf_set_u32(reg_params[3].value, 0, 32, address);
 
+        /* 执行这个算法的时候出错了 */
         retval = target_run_algorithm(target, 0, NULL, 4, reg_params,
-            write_algorithm->address, 0, 1000, &armv7m_info);
+            write_algorithm->address, 0, 10000, &armv7m_info);
 
         if (retval != ERROR_OK) {
             LOG_ERROR("Error executing RV40f Flash programming algorithm");

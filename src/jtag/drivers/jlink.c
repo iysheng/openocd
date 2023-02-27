@@ -1983,6 +1983,7 @@ struct pending_scan_result {
 #define MAX_PENDING_SCAN_RESULTS 256
 
 static int pending_scan_results_length;
+/* 最多缓存 256 个 */
 static struct pending_scan_result pending_scan_results_buffer[MAX_PENDING_SCAN_RESULTS];
 
 static void jlink_tap_init(void)
@@ -2155,6 +2156,7 @@ static int jlink_swd_switch_seq(enum swd_special_seq seq)
 	return ERROR_OK;
 }
 
+/* jlink 的 swd 接口刷新执行 queue */
 static int jlink_swd_run_queue(void)
 {
 	int i;
@@ -2183,6 +2185,7 @@ static int jlink_swd_run_queue(void)
 	for (i = 0; i < pending_scan_results_length; i++) {
 		/* Devices do not reply to DP_TARGETSEL write cmd, ignore received ack */
 		bool check_ack = swd_cmd_returns_ack(pending_scan_results_buffer[i].swd_cmd);
+		LOG_DEBUG("iysheng swd_cmd[%d]: %x", i, pending_scan_results_buffer[i].swd_cmd);
 		int ack = buf_get_u32(tdo_buffer, pending_scan_results_buffer[i].first, 3);
 		if (check_ack && ack != SWD_ACK_OK) {
 			/* 应答出错，没有 OK */
@@ -2256,6 +2259,7 @@ static void jlink_swd_queue_cmd(uint8_t cmd, uint32_t *dst, uint32_t data, uint3
 		jlink_queue_data_out(NULL, ap_delay_clk);
 }
 
+/* jlink 的 swd driver */
 static const struct swd_driver jlink_swd = {
 	.init = &jlink_swd_init,
 	.switch_seq = &jlink_swd_switch_seq,
