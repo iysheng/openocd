@@ -225,13 +225,13 @@ static int armv7m_get_core_reg(struct reg *reg)
 	/* 读上来的竟然是 0xA450A45 是 ARM_COMMON_MAGIC
 	 * ARMV7M_COMMON_MAGIC 对应的是 0x2A452A45U
 	 * */
-	LOG_INFO("red arm common_magic=%x", arm->common_magic);
+	//LOG_INFO("red arm common_magic=%x", arm->common_magic);
 
 	if (target->state != TARGET_HALTED)
 		return ERROR_TARGET_NOT_HALTED;
 
 	retval = arm->read_core_reg(target, reg, reg->number, arm->core_mode);
-	LOG_INFO("red retval=%d", retval);
+	//LOG_INFO("red retval=%d", retval);
 
 	return retval;
 }
@@ -357,20 +357,17 @@ static int armv7m_read_core_reg(struct target *target, struct reg *r,
 	} else {
 		assert(r->size == 32 || r->size == 64);
 
-		LOG_INFO("red wow come here 000");
 		struct arm_reg *armv7m_core_reg = r->arch_info;
 		uint32_t regsel = armv7m_map_id_to_regsel(armv7m_core_reg->num);
 
 		/* 执行这个函数出错了 */
 		retval = armv7m->load_core_reg_u32(target, regsel, &reg_value);
-		LOG_INFO("red wow come here 111 retval=%d", retval);
 		if (retval != ERROR_OK)
 			return retval;
 		buf_set_u32(r->value, 0, 32, reg_value);
 
 		if (r->size == 64) {
 			retval = armv7m->load_core_reg_u32(target, regsel + 1, &reg_value);
-		LOG_INFO("red wow come here 222 retval=%d", retval);
 			if (retval != ERROR_OK) {
 				r->valid = false;
 				return retval;

@@ -176,7 +176,6 @@ static int rv40f_complete(struct target *target, int timeout)
 
     /* check CMDLK bit from FASTAT register */
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check CMDLK:%x", reg8);
 
     retval = rv40f_busy_wait(target, timeout);
 
@@ -192,17 +191,11 @@ static int rv40f_complete(struct target *target, int timeout)
     /* check CMDLK bit */
     if (reg8 & 0x10){
         rv40f_unlock(target);
-        LOG_ERROR("iysheng failed check CMDLK:%x", reg8);
     retval = target_read_u32(target, FACI_FSTATR, &reg32);
-        LOG_ERROR("iysheng failed check FSTATR:%x", reg32);
     retval = target_read_u32(target, 0X407FE078, &reg32);
-        LOG_ERROR("iysheng failed check PRO0:%x", reg32);
     retval = target_read_u8(target, 0X10081B0, &reg8);
-        LOG_ERROR("iysheng failed check MCUVER:%x", reg8);
     retval = target_read_u32(target, 0X407FE014, &reg32);
-        LOG_ERROR("iysheng failed check FAEINT:%x", reg32);
     retval = target_read_u32(target, 0X407FE018, &reg32);
-        LOG_ERROR("iysheng failed check FRDYIE:%x", reg32);
 
         retval = ERROR_FLASH_OPERATION_FAILED;
     }
@@ -285,7 +278,6 @@ static int rv40f_erase(struct flash_bank *bank, unsigned int first,
     }
 
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 00 CMDLK:%x", reg8);
     /* enter P/E mode */
     retval = rv40f_pe_mode(bank);
 
@@ -336,11 +328,8 @@ static int __rv40f_flash_write(struct target *target, unsigned int count, uint16
     int retval;
 
     target_write_u32(target, FACI_FSADDR, (uint32_t)dst_addr);
-    LOG_ERROR("dbg 0000");
     target_write_u8(target, FACI_CMD_AREA, 0XE8);
-    LOG_ERROR("dbg 1111");
     target_write_u8(target, FACI_CMD_AREA, count);
-    LOG_ERROR("dbg 2222:%d", count);
 #if 0
     target_write_u16(target, FACI_CMD_AREA, 0X5678);
     LOG_ERROR("dbg 2222.2:%d", count);
@@ -348,33 +337,23 @@ static int __rv40f_flash_write(struct target *target, unsigned int count, uint16
     LOG_ERROR("dbg 2222.3:%d", count);
 #endif
 
-    retval = target_read_u32(target, FACI_FSTATR, &reg32);
-    LOG_ERROR("iysheng check FRDY %d:%x", retval, reg32);
-
     for (; i < count; i++)
     {
-        value = target_read_u16(target, (target_addr_t)(wa_start + i), &reg16);
+        retval = target_read_u16(target, (target_addr_t)(wa_start + i), &reg16);
         target_write_u16(target, FACI_CMD_AREA, reg16);
-        LOG_ERROR("dbg 3333:%d :%x@%lx", i, value, (target_addr_t)(wa_start + i));
         do
         {
-            target_read_u8(target, FACI_FSTATR, &reg8);
-            LOG_ERROR("dbg 4444:%x", reg8);
-
-    retval = target_read_u32(target, FACI_FSTATR, &reg32);
-    LOG_ERROR("iysheng check FRDY 5555%d:%x", retval, reg32);
+            retval = target_read_u32(target, FACI_FSTATR, &reg32);
             usleep(1000);
-        } while(reg8 & 0X400);
+        } while(reg32 & 0X400);
     }
 
     target_write_u8(target, FACI_CMD_AREA, 0XD0);
 
     retval = target_read_u32(target, FACI_FSTATR, &reg32);
-    LOG_ERROR("iysheng check FRDY %d:%x", retval, reg32);
     if (reg32 & 0X8000)
     {
         retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng do check CMDLK%d:%x", retval, reg8);
     }
 
 	return retval;
@@ -394,7 +373,7 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
     int retval = ERROR_OK;
     unsigned thisrun_count;
     uint8_t r8, reg8;
-    int i = 0;
+    //int i = 0;
 
     /* Increase buffer_size if needed */
     if (buffer_size < (target->working_area_size / 2))
@@ -441,13 +420,11 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
     }
 
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 00 CMDLK:%x", reg8);
 
     /* enter P/E mode */
     retval = rv40f_pe_mode(bank);
 
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 01 CMDLK:%x", reg8);
 
     if (retval != ERROR_OK)
         return retval;
@@ -469,7 +446,6 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
     }
 
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 02 CMDLK:%x", reg8);
     count = count / 2;		/* number bytes -> number halfwords */
 
     /* allocate working area and variables with flash programming code */
@@ -522,8 +498,8 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
             thisrun_count = 64;
         }
 
-        for (i = 0; i < 16; i++)
-            LOG_INFO("buffer[%d]@%lx=%hhx", i, source->address + i*2, (uint8_t)buffer[i]);
+        //for (i = 0; i < 16; i++)
+            //LOG_INFO("buffer[%d]@%lx=%hhx", i, source->address + i*2, (uint8_t)buffer[i]);
 
         /* 好像没有真正写进去 */
         retval = target_write_buffer(target, source->address, thisrun_count * 2, buffer);
@@ -534,10 +510,9 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
         buf_set_u32(reg_params[1].value, 0, 32, source->address);
         buf_set_u32(reg_params[2].value, 0, 32, source->address + thisrun_count * 2);
         buf_set_u32(reg_params[3].value, 0, 32, address);
-        LOG_INFO("%d src:[%x,%x] dst:%x", thisrun_count, (unsigned int)source->address, (unsigned int)source->address + thisrun_count*2, address);
+        //LOG_INFO("%d src:[%x,%x] dst:%x", thisrun_count, (unsigned int)source->address, (unsigned int)source->address + thisrun_count*2, address);
 
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 03 CMDLK:%x", reg8);
 #if 0
         /* 执行这个算法的时候出错了 */
         retval = target_run_algorithm(target, 0, NULL, 4, reg_params,
@@ -546,7 +521,6 @@ static int rv40f_write_block(struct flash_bank *bank, const uint8_t *buffer,
         __rv40f_flash_write(target, thisrun_count, (uint16_t *)source->address, (uint16_t *)source->address + thisrun_count, address);
 #endif
     retval = target_read_u8(target, FACI_FASTAT, &reg8);
-        LOG_ERROR("iysheng failed check 04 CMDLK:%x", reg8);
 
         if (retval != ERROR_OK) {
             LOG_ERROR("Error executing RV40f Flash programming algorithm");

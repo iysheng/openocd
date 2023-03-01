@@ -294,7 +294,7 @@ int mem_ap_write_u32(struct adiv5_ap *ap, target_addr_t address,
 			CSW_32BIT | (ap->csw_value & CSW_ADDRINC_MASK),
 			address & 0xFFFFFFFFFFFFFFF0ull);
 
-	LOG_INFO("red set up mem ap write here 777 retval=%d", retval);
+	//LOG_INFO("red set up mem ap write here 777 retval=%d", retval);
 	if (retval != ERROR_OK)
 		return retval;
 
