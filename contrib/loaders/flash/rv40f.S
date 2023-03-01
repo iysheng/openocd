@@ -140,7 +140,7 @@ waitDBFULL:
     adds    r0, r5
     ldr     r1, [r0]
     /* check DBFULL bit */
-    ldr     r0, =FSTATR_DBFUL
+    ldr     r0, =FSTAT_DBFUL
     tst     r0, r1
     bne     waitDBFULL
     b       loopStart
