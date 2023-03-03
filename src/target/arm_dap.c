@@ -110,7 +110,11 @@ static int dap_init_all(void)
 			continue;
 
 		if (transport_is_swd()) {
-			/* 默认修改使用的是 swd 模式 */
+			/* 
+			 * 因为 transport select swd 执行了
+			 * 所以，会执行到这里
+			 * 关联 swd_dap_ops 函数集合到这个 dap
+			 * */
 			dap->ops = &swd_dap_ops;
 			obj->swd = adapter_driver->swd_ops;
 		} else if (transport_is_dapdirect_swd()) {
@@ -122,13 +126,14 @@ static int dap_init_all(void)
 
 		if (dap->adi_version == 0) {
 			LOG_DEBUG("DAP %s configured by default to use ADIv5 protocol", jtag_tap_name(dap->tap));
+			/* 默认是 v5 版本 */
 			dap->adi_version = 5;
 		} else {
 			LOG_DEBUG("DAP %s configured to use %s protocol by user cfg file", jtag_tap_name(dap->tap),
 				is_adiv6(dap) ? "ADIv6" : "ADIv5");
 		}
 
-		/* 执行 adapter 的 connect 函数 */
+		/* 执行 dap 的 ops connect 函数 */
 		retval = dap->ops->connect(dap);
 		if (retval != ERROR_OK)
 			return retval;
@@ -358,6 +363,7 @@ static int dap_create(struct jim_getopt_info *goi)
 	}
 
 	/* Create it */
+	/* 申请一个 arm_dap_object 内存空间 */
 	dap = calloc(1, sizeof(struct arm_dap_object));
 	if (!dap)
 		return JIM_ERR;
@@ -527,6 +533,7 @@ static const struct command_registration dap_subcommand_handlers[] = {
 	COMMAND_REGISTRATION_DONE
 };
 
+/* dap 相关命令 */
 static const struct command_registration dap_commands[] = {
 	{
 		.name = "dap",

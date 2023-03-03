@@ -658,6 +658,7 @@ static const struct command_registration swd_commands[] = {
 		 * REVISIT can we verify "just one SWD DAP" here/early?
 		 */
 		.name = "newdap",
+		/* 创建一个 dap */
 		.jim_handler = jim_jtag_newtap,
 		.mode = COMMAND_CONFIG,
 		.help = "declare a new SWD DAP"
@@ -711,6 +712,9 @@ static int swd_init(struct command_context *ctx)
 	return ERROR_OK;
 }
 
+/*
+ * swd 接口的传输结构体定义
+ * */
 static struct transport swd_transport = {
 	.name = "swd",
 	.select = swd_select,
@@ -720,6 +724,10 @@ static struct transport swd_transport = {
 static void swd_constructor(void) __attribute__((constructor));
 static void swd_constructor(void)
 {
+	/* 注册 swd 接口函数
+	 * 当执行 transport select 选择 swd 时，会执行 swd_transport 的 select 成员函数
+	 * 在 swd_select 函数中会注册 swd 相关的命令
+	 * */
 	transport_register(&swd_transport);
 }
 

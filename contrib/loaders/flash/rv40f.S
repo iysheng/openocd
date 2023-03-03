@@ -89,71 +89,12 @@
 **************************************************************************************************/
 
     .syntax unified
-    .cpu cortex-m0plus
-    .thumb
-    .thumb_func
 
 .global rv40f_flash_write
 
 rv40f_flash_write:
 
-    mov     r9, r1
-    mov     r4, r9          /* r4 => iterated source address */
-    ldr     r5, =FACI_BASE  /* r5 => base register address */
-    ldr     r7, =FACI_CMD   /* r7 => load FACI command issuing area address */ 
-    mov     r9, r0
-    mov     r6, r9          /* r6 => count of halfwords */
-
-    /* set the destination address of the block */
-    str     r3, [r5, #FSADDR]
-
-    /* issue the write command */
-    movs    r0, #0xE8
-    strb    r0, [r7]
-    /* write count of halfwords */
-    mov     r0, r9
-    strb    r0, [r7]
- 
-    /* write first halfword */
-    ldrh    r0, [r4]
-    strh    r0, [r7]
-    /* increment src address */
-    adds    r4, #2
-
-loopStart:
-
-    /* decrement counter */
-    subs     r6, #1
-
-    /* if zero, jump to completion */
-    beq     Complete
-
-    /* write next halfword */
-    ldrh    r0, [r4]
-    strh    r0, [r7]
-    /* increment src address */
-    adds    r4, #2
-
-/* wait while dbfull bit == 1 */
-waitDBFULL:
-    movs    r0, #FSTATR
-    adds    r0, r5
-    ldr     r1, [r0]
-    /* check DBFULL bit */
-    ldr     r0, =FSTAT_DBFUL
-    tst     r0, r1
-    bne     waitDBFULL
-    b       loopStart
-
-/* complete transaction by writting D0h to FACI cmd issuing area */
-Complete:
-    movs    r0, #0xD0
-    strb    r0, [r7]
-
-exit:
-    movs    r1, #FSTATR
-    adds    r1, r5
-    ldr     r0, [r1]
+    ldr     r0, =FACI_BASE  /* r5 => base register address */
     bkpt    #0
 
 

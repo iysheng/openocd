@@ -67,6 +67,7 @@ static int transport_select(struct command_context *ctx, const char *name)
 			 * forcing it to JTAG or SWD mode.
 			 */
 			if (retval == ERROR_OK)
+				/* 如果成功初始化，那么关联这个 transport 到全局变量 session */
 				session = t;
 			else
 				LOG_ERROR("Error selecting '%s' as transport", t->name);
@@ -103,6 +104,7 @@ int allow_transports(struct command_context *ctx, const char * const *vector)
 	allowed_transports = vector;
 
 	/* autoselect if there's no choice ... */
+	/* 如果只有一种的话，直接选择这一种 */
 	if (!vector[1]) {
 		LOG_INFO("only one transport option; autoselecting '%s'", vector[0]);
 		return transport_select(ctx, vector[0]);
@@ -126,6 +128,7 @@ int allow_transports(struct command_context *ctx, const char * const *vector)
  *
  * @returns ERROR_OK on success, else a fault code.
  */
+/* 注册支持的 transport */
 int transport_register(struct transport *new_transport)
 {
 	struct transport *t;
@@ -264,6 +267,10 @@ static int jim_transport_select(Jim_Interp *interp, int argc, Jim_Obj * const *a
 				}
 				LOG_INFO("auto-selecting first available session transport \"%s\". "
 					 "To override use 'transport select <transport>'.", allowed_transports[0]);
+				/* 选择链接方式 transport 
+				 * eg: transport select swd
+				 * 会注册 swd 相关的接口函数
+				 * */
 				res = transport_select(global_cmd_ctx, allowed_transports[0]);
 				if (res != JIM_OK)
 					return res;

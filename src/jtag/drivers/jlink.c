@@ -2268,6 +2268,9 @@ static const struct swd_driver jlink_swd = {
 	.run = &jlink_swd_run_queue,
 };
 
+/*
+ * jlink 支持 jtag 和 swd 接口
+ * */
 static const char * const jlink_transports[] = { "jtag", "swd", NULL };
 
 static struct jtag_interface jlink_interface = {
@@ -2293,6 +2296,6 @@ struct adapter_driver jlink_adapter_driver = {
 	.poll_trace = &poll_trace,
 
 	.jtag_ops = &jlink_interface,
-	/* jlink 的 swd 接口 */
+	/* jlink 的 swd 接口 function sets */
 	.swd_ops = &jlink_swd,
 };

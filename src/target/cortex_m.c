@@ -3044,6 +3044,9 @@ static const struct command_registration cortex_m_exec_command_handlers[] = {
 	},
 	COMMAND_REGISTRATION_DONE
 };
+/*
+ * cortex_m_command 函数集合
+ * */
 static const struct command_registration cortex_m_command_handlers[] = {
 	{
 		.chain = armv7m_command_handlers,
@@ -3069,6 +3072,9 @@ static const struct command_registration cortex_m_command_handlers[] = {
 	COMMAND_REGISTRATION_DONE
 };
 
+/*
+ * cortex_m 类型的 target 相关的结构体实体
+ * */
 struct target_type cortexm_target = {
 	.name = "cortex_m",
 
@@ -3094,7 +3100,8 @@ struct target_type cortexm_target = {
 	.blank_check_memory = armv7m_blank_check_memory,
 
 	/* 执行算法的入口函数
-	 * 为什么没有 armv7m_run_algorithm
+	 * 为什么没有 armv8m_run_algorithm
+	 * armv8m 和 armv7m 保持兼容
 	 * */
 	.run_algorithm = armv7m_run_algorithm,
 	.start_algorithm = armv7m_start_algorithm,

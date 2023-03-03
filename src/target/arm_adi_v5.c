@@ -2332,6 +2332,9 @@ err_no_param:
 	return JIM_ERR;
 }
 
+/*
+ * target 相关的参数配置函数统一入口
+ * */
 int adiv5_jim_configure(struct target *target, struct jim_getopt_info *goi)
 {
 	struct adiv5_private_config *pc;

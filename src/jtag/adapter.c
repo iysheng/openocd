@@ -120,6 +120,7 @@ static void adapter_driver_gpios_init(void)
  * Do low-level setup like initializing registers, output signals,
  * and clocking.
  */
+/* 适配器初始化 */
 int adapter_init(struct command_context *cmd_ctx)
 {
 	if (is_adapter_initialized())
@@ -452,11 +453,15 @@ COMMAND_HANDLER(handle_adapter_driver_command)
 				return retval;
 		}
 
+		/* 关联选中的驱动到全局变量 adapter_driver */
 		adapter_driver = adapter_drivers[i];
 
 		return allow_transports(CMD_CTX, adapter_driver->transports);
 	}
 
+	/*
+	 * 如果 adapter 驱动不在支持的列表中，会打印出来支持的 adapter 列表
+	 * */
 	/* no valid interface was found (i.e. the configuration option,
 	 * didn't match one of the compiled-in interfaces
 	 */
@@ -713,6 +718,9 @@ COMMAND_HANDLER(handle_adapter_srst_pulse_width_command)
 	return ERROR_OK;
 }
 
+/*
+ * 设置 adapter 的速度
+ * */
 COMMAND_HANDLER(handle_adapter_speed_command)
 {
 	if (CMD_ARGC > 1)

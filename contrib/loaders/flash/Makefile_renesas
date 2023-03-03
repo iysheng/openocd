@@ -10,7 +10,7 @@ OBJDUMP=$(CROSS_COMPILE)objdump
 
 
 AFLAGS = -static -nostartfiles -mlittle-endian -Wa,-EL
-CFLAGS = -c -mthumb -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -nostdlib -nostartfiles -Os -g -fPIC 
+CFLAGS = -c -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -nostdlib -nostartfiles -Os -g -fPIC 
 all: rv40f.inc
 SRC:=rv40f.S
 

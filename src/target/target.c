@@ -117,7 +117,7 @@ static struct target_type *target_types[] = {
 	&dragonite_target,
 	&xscale_target,
 	&xtensa_chip_target,
-	&cortexm_target,
+	&cortexm_target, /* cortextm 类型 */
 	&cortexa_target,
 	&cortexr4_target,
 	&arm11_target,
@@ -6158,6 +6158,7 @@ static const struct command_registration target_instance_command_handlers[] = {
 	COMMAND_REGISTRATION_DONE
 };
 
+/* target 创建 */
 static int target_create(struct jim_getopt_info *goi)
 {
 	Jim_Obj *new_cmd;
@@ -6187,9 +6188,11 @@ static int target_create(struct jim_getopt_info *goi)
 	}
 
 	/* TYPE */
+	/* 解析指定的 target 的类型： cortex_m 为例 */
 	e = jim_getopt_string(goi, &cp, NULL);
 	if (e != JIM_OK)
 		return e;
+	/* 获取当前的传输协议 swd */
 	struct transport *tr = get_current_transport();
 	if (tr->override_target) {
 		e = tr->override_target(&cp);
@@ -6206,6 +6209,7 @@ static int target_create(struct jim_getopt_info *goi)
 			break;
 		}
 	}
+	/* 如果没有知道，说明指定的 target create 类型不支持 */
 	if (!target_types[x]) {
 		Jim_SetResultFormatted(goi->interp, "Unknown target type %s, try one of ", cp);
 		for (x = 0 ; target_types[x] ; x++) {
@@ -6225,6 +6229,7 @@ static int target_create(struct jim_getopt_info *goi)
 	}
 
 	/* Create it */
+	/* 申请 target 内存空间 */
 	target = calloc(1, sizeof(struct target));
 	if (!target) {
 		LOG_ERROR("Out of memory");
@@ -6356,11 +6361,14 @@ static int target_create(struct jim_getopt_info *goi)
 	}
 
 	/* now - create the new target name command */
+	/* 创建以 target name 开头的命令集合 */
 	const struct command_registration target_subcommands[] = {
 		{
+			/* target 标准的函数集合 */
 			.chain = target_instance_command_handlers,
 		},
 		{
+			/* target 类型下支持的函数集合 */
 			.chain = target->type->commands,
 		},
 		COMMAND_REGISTRATION_DONE
@@ -6521,7 +6529,9 @@ static int jim_target_smp(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 	return retval;
 }
 
-
+/*
+ * 创建 target 入口函数
+ * */
 static int jim_target_create(Jim_Interp *interp, int argc, Jim_Obj *const *argv)
 {
 	struct jim_getopt_info goi;
@@ -6730,6 +6740,7 @@ COMMAND_HANDLER(handle_fast_load_command)
 	return retval;
 }
 
+/* target 命令函数集合 */
 static const struct command_registration target_command_handlers[] = {
 	{
 		.name = "targets",

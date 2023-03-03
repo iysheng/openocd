@@ -502,6 +502,7 @@ int armv7m_run_algorithm(struct target *target,
 			num_reg_params, reg_params,
 			entry_point, exit_point,
 			arch_info);
+	LOG_INFO("iysheng start algorithm:%d", retval);
 
 	if (retval == ERROR_OK)
 		retval = armv7m_wait_algorithm(target,
@@ -509,6 +510,7 @@ int armv7m_run_algorithm(struct target *target,
 				num_reg_params, reg_params,
 				exit_point, timeout_ms,
 				arch_info);
+	LOG_INFO("iysheng wait algorithm:%d", retval);
 
 	return retval;
 }
@@ -866,6 +868,7 @@ static int armv7m_setup_semihosting(struct target *target, int enable)
 }
 
 /** Sets up target as a generic ARMv7-M core */
+/* 将 target 初始化为 ARMv7-M 核 */
 int armv7m_init_arch_info(struct target *target, struct armv7m_common *armv7m)
 {
 	struct arm *arm = &armv7m->arm;
